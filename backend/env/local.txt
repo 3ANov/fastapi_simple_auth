@@ -1,3 +1,4 @@
 DEBUG=1
 POSTGRES_USER=testuser
 POSTGRES_PASSWORD=testuser
+POSTGRES_DB=test_db

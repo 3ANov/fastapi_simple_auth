@@ -13,4 +13,38 @@ services:
       - backend/env/local.txt
     environment:
       - LOG_CONF=env/logging.json
-
+    depends_on:
+      - db
+  db:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=testuser
+      - POSTGRES_DB=test_db
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - db
+    ports:
+      - "5555:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    restart: unless-stopped
+    logging:
+      driver: none
+  dbmate:
+    image: amacneil/dbmate
+    env_file:
+      - backend/env/local.txt
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/backend
+    environment:
+      - DATABASE_URL=postgres://testuser:testuser@db:5432/test_db?sslmode=disable
+      - DBMATE_MIGRATIONS_DIR=backend/src/db/migrations
+volumes:
+  postgres_data:
